@@ -1,0 +1,38 @@
+#Initial Setup
+Parameters:
+  TemplateS3Bucket:
+    Type: String
+    Description: S3 Bucket for the cloudformation templates
+  LogsS3Bucket:
+    Type: String
+    Description: s3 bucket for the logs
+Resources:
+  TFLogsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref LogsS3Bucket
+      AccessControl: LogDeliveryWrite
+  TFTemplateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: Private
+      BucketName: !Ref TemplateS3Bucket
+      LoggingConfiguration:
+        DestinationBucketName: !Ref TFLogsBucket
+        LogFilePrefix: 'template-logs'
+      VersioningConfiguration:
+        Status: Enabled
+Outputs:
+  StackLoggingBucket:
+    Description: Log bucket for Time Fades
+    Value: !Ref TFLogsBucket 
+    Export:
+      Name: !Sub "${AWS::StackName}-LoggingBucket"
+  StackTemplateBucket:
+    Description: Template bucket for Time Fades
+    Value: !Ref TFTemplateBucket 
+    Export:
+      Name: !Sub "${AWS::StackName}-TemplateBucket"
+

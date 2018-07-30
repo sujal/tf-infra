@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  ProdCIDRBlock:
+    Type: String
+    Description: The CIDR block for the prod VPC that handles incoming traffic
+  ProdInternalCIDRBlock:
+    Type: String
+    Description: The CIDR block for the prod VPC that handles internal services traffic
+Resources:
+  tfProdVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref ProdCIDRBlock
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: default
+  tfProdInternalVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref ProdInternalCIDRBlock
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: default
+Outputs:
+  ProdVPC:
+    Description: Production VPC
+    Value: !Ref tfProdVPC 
+    Export:
+      Name: !Sub "${AWS::StackName}-${AWS::Region}-Production-VPC"
+  ProdInternalVPC:
+    Description: Production Internal-only VPC
+    Value: !Ref tfProdInternalVPC 
+    Export:
+      Name: !Sub "${AWS::StackName}-${AWS::Region}-Production-InternalVPC"
+

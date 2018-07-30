@@ -1,0 +1,44 @@
+# Create Zone
+Parameters:
+  NetworkStackNameParameter:
+    Type: String
+    Description: The name of the network stack VPC - it will append the region that the CF command is getting run against...
+  NetworkStackRegion:
+    Type: String
+    Description: The region of the network stack
+  PublicRootDomain:
+    Type: String
+    Description: The domain name for the public DNS
+  PrivateRootDomain:
+    Type: String
+    Description: The domain name for the private DNS
+Resources:
+  TFPublicZone: 
+    Type: "AWS::Route53::HostedZone"
+    Properties: 
+      HostedZoneConfig: 
+        Comment: "hosted zone for the public DNS"
+      Name: !Ref PublicRootDomain
+  TFPrivateZone:
+    Type: "AWS::Route53::HostedZone"
+    Properties: 
+      HostedZoneConfig: 
+        Comment: "hosted zone for the private DNS"
+      Name: !Ref PrivateRootDomain
+      VPCs:
+        -
+          VPCId: 
+            Fn::ImportValue:
+              !Sub "${NetworkStackNameParameter}-${NetworkStackRegion}-Production-VPC"
+          VPCRegion: !Ref NetworkStackRegion
+Outputs:
+  PublicDNSName:
+    Description: Public DNS Zone ID
+    Value: !Ref TFPublicZone 
+    Export:
+      Name: !Sub "${AWS::StackName}-DNS-PublicZoneID"
+  PrivateDNSName:
+    Description: Private DNS Zone ID
+    Value: !Ref TFPrivateZone 
+    Export:
+      Name: !Sub "${AWS::StackName}-DNS-PrivateZoneID"
