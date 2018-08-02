@@ -37,8 +37,18 @@ Outputs:
     Value: !Ref TFPublicZone 
     Export:
       Name: !Sub "${AWS::StackName}-DNS-PublicZoneID"
+  PublicDNSDomain:
+    Description: Public Root Domain Name
+    Value: !Ref PublicRootDomain
+    Export:
+      Name: !Sub "${AWS::StackName}-DNS-PublicDomain"
   PrivateDNSName:
     Description: Private DNS Zone ID
     Value: !Ref TFPrivateZone 
     Export:
       Name: !Sub "${AWS::StackName}-DNS-PrivateZoneID"
+  PrivateDNSDomain:
+    Description: Private Root Domain Name
+    Value: !Ref PrivateRootDomain
+    Export:
+      Name: !Sub "${AWS::StackName}-DNS-PrivateDomain"

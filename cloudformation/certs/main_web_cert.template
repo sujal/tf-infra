@@ -1,0 +1,24 @@
+# MUST RUN THIS in AWS US-East-1 for CloudFront usage
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  RootDomainName:
+    Type: String
+    Description: the name of the DNS stack
+Resources:
+  SiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: !Ref RootDomainName
+      SubjectAlternativeNames:
+        - !Join [ '.', ['www', !Ref RootDomainName ]]
+      DomainValidationOptions:
+        - DomainName: !Ref RootDomainName
+          ValidationDomain: !Ref RootDomainName
+        - DomainName: !Join [ '.', ['www', !Ref RootDomainName ]]
+          ValidationDomain: !Ref RootDomainName
+Outputs:
+  CertificateID:
+    Value: !Ref SiteCertificate
+    Description: Certificate ARN
+    Export: 
+      Name: !Sub "${AWS::StackName}-Cert-PublicWebDomain"

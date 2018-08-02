@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  DNSStackName:
+    Type: String
+    Description: the stack name that outputs the zone IDs
+  MXLine1:
+    Type: String
+    Description: the first mail server
+  MXLine2:
+    Type: String
+    Description: the second mail server
+Conditions:
+  HasSecondLine: !Not [ !Equals [ !Ref MXLine2, "" ]]
+Resources:
+  FirstMailRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: 
+        Fn::ImportValue:
+          !Sub "${DNSStackName}-DNS-PublicDomain"
+      HostedZoneId: 
+        Fn::ImportValue:
+          !Sub "${DNSStackName}-DNS-PublicZoneID"
+      Type: MX
+      TTL: 3600
+      ResourceRecords:
+        - !Ref MXLine1
+        - !If [ HasSecondLine, !Ref MXLine2, !Ref "AWS::NoValue" ]
