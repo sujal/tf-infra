@@ -4,6 +4,9 @@ Parameters:
   TFPoolName:
     Type: String
     Description: Name of the pool
+  Environment:
+    Type: String
+    Description: The Environment for the Pool
 Resources:
 # Creates a role that allows Cognito to send SNS messages
   SNSCognitoRole:
@@ -35,7 +38,7 @@ Resources:
   UserPool:
     Type: "AWS::Cognito::UserPool"
     Properties:
-      UserPoolName: !Sub ${TFPoolName}-user-pool
+      UserPoolName: !Sub ${TFPoolName}-${Environment}-user-pool
       MfaConfiguration: "ON"
       DeviceConfiguration:
         ChallengeRequiredOnNewDevice: Yes
@@ -55,20 +58,20 @@ Resources:
       UsernameAttributes:
         - email
       SmsConfiguration:
-        ExternalId: !Sub ${TFPoolName}-external
+        ExternalId: !Sub ${TFPoolName}-${Environment}-external
         SnsCallerArn: !GetAtt SNSCognitoRole.Arn
 
   UserPoolClient:
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: !Sub ${TFPoolName}-client
+      ClientName: !Sub ${TFPoolName}-${Environment}-client
       GenerateSecret: false
       UserPoolId: !Ref UserPool
 
   IdentityPool:
     Type: "AWS::Cognito::IdentityPool"
     Properties:
-      IdentityPoolName: !Sub ${TFPoolName}Identity
+      IdentityPoolName: !Sub ${TFPoolName}${Environment}Identity
       AllowUnauthenticatedIdentities: true
       CognitoIdentityProviders: 
         - ClientId: !Ref UserPoolClient
